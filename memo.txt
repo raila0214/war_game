@@ -1,0 +1,2 @@
+//package.json(設計中のため一時的にvite buildのみにしている)
+    "build": "tsc -b && vite build",
