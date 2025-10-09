@@ -19,6 +19,32 @@ export type GameObject = {
 //陣営（チームたぐ）
 export type Team = "north" | "south";
 
+//初期設定画面仮
+export type UnitSetupData = {
+  type:"infantry"   // 小隊
+  | "battalion"  // 大隊
+  | "raider"     // 遊撃部隊
+  | "support"    // 支援部隊
+  | "supply";    // 物資部隊
+  members: number;
+  team: "north"|"south";
+  x?: number;
+  y?: number;
+};
+
+//人数割り振り
+export type PlayerUnitConfig = {
+  totalPoints: number;
+  units: {
+    type: "infantry"   // 小隊
+    | "battalion"  // 大隊
+    | "raider"     // 遊撃部隊
+    | "support"    // 支援部隊
+    | "supply";    // 物資部隊
+    members: number;
+  }[];
+};
+
 //部隊タイプ
 export type UnitType = 
 | "infantry"   // 小隊
@@ -44,6 +70,12 @@ export type Unit = {
   members: number //部隊人数
   mode?: "heal" | "attack";
   collectedSupplies?: number;
+};
+
+//両チームの設定
+export type GameSetup = {
+  north: PlayerUnitConfig;
+  south: PlayerUnitConfig;
 };
 
 // 物資部隊が1ターンに収集できる物資量を計算

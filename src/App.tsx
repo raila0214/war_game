@@ -1,52 +1,15 @@
 import { useState } from "react";
 import Board from "./Board";
-import type { GameObject , Unit } from "./types";
+import type { GameObject , Unit , GameSetup } from "./types";
 import { applyAttackOrHeal } from "./battleLogic";
 import { createBoard } from "./boardSetup";
 import { processSupportAction } from "./supportLogic";
 import { collectSupplies, trySpawnTank } from "./supplyLogic";
+import { createUnit } from "./unitStats";
+import TeamSetupScreen from "./TeamSetupScreen";
+//import { generateUnitFromConfig } from "./unitSetup";
 
-function calcUnitStats(type: string, members: number){
-  switch(type){
-    case "infantry": //小隊
-      return {
-        attack: 80 + (members -1)*1,
-        defense: 40 + (members -1)*0.5,
-        hp: 500 + (members -1)*10,
-        speed: 4,
-      };
-    case "battalion": //大隊
-      return {
-        attack: 60 + (members -1)*0.8,
-        defense: 30 + (members -1)*0.5,
-        hp: 2000 + (members -1)*15,
-        speed: 4,
-      };
-    case "raider": //遊撃部隊
-      return {
-        attack: 100 + (members -1)*1.2,
-        defense: 20 + (members -1)*0.5,
-        hp: 240 + (members -1)*5,
-        speed: 5,
-      };
-    case "support": //支援部隊
-      return {
-        attack: 20,
-        defense: 30 + (members -1)*0.5,
-        hp: 600 + (members -1)*10,
-        speed: 2,
-      };
-    case "tank": //戦車
-      return {
-        attack: 0,
-        defense: 60,
-        hp: 1600,
-        speed: 1,
-      };
-    default:
-      return {attack: 0, defense: 0, hp:0, speed:0};
-  }
-}
+
 //コア初期値
 const initialGameObjects: Record<string, GameObject> = {
   mainCoreN: { id: "mainCoreN", type: "coreMain", hp: 10000, maxHp: 10000 },
@@ -60,64 +23,74 @@ const initialGameObjects: Record<string, GameObject> = {
 };
 
 export default function App() {
+  //盤面
   const board = createBoard();
+  //コア
   const [gameObjects, setGameObjects] = useState(initialGameObjects);
 
-  //北物資
-  const [tatolSuppliesN, setTotalSuppliesN] = useState(0);
-  const [spawnedTanksN, setSpawnedTanksN] = useState(0);
-
-  //南物資
-  const [tatolSuppliesS, setTotalSuppliesS] = useState(0);
-  const [spawnedTanksS, setSpawnedTanksS] = useState(0);
-
-  // === 部隊の初期化 ===
-  const smallSquadStats = calcUnitStats("infantry", 20);
-  const supportStats = calcUnitStats("support", 15);
-
+  //盤上に存在する部隊ユニット
   const [units, setUnits] = useState<Unit[]>([
-    {
-      id: "north_infantry_1",
-      team: "north",
-      type: "infantry",
-      x: 6,
-      y: 5,
-      members: 20,
-      range: 1,
-      ...smallSquadStats,
-      hp: smallSquadStats.hp,
-      maxHp: smallSquadStats.hp,
-    },
-    {
-      id: "south_support_1",
-      team: "south",
-      type: "support",
-      x: 7,
-      y: 24,
-      members: 15,
-      range: 1,
-      ...supportStats,
-      hp: supportStats.hp,
-      maxHp: supportStats.hp,
-    },
+    createUnit("north_support_1","north","support",6,5,15),
   ]);
 
-  // === ターン内で支援部隊行動テスト ===
-  function simulateTurn() {
-    const supportUnits = units.filter((u) => u.type === "support");
-    let updatedObjects = { ...gameObjects };
+  //盤外の物資部隊ユニット
+  const offboardNorthSupplyUnits: Unit[] = [
+    {...createUnit("north_supply","north","supply",-1,-1,20), range: 0},
+  ];
+  const offboardSouthSupplyUnits: Unit[] = [
+    {...createUnit("south_supply","north","supply",-1,-1,20), range: 0},
+  ];
 
-    for (const sup of supportUnits) {
-      updatedObjects = processSupportAction(board, updatedObjects, sup, units);
+  //北物資
+  const [totalSuppliesN, setTotalSuppliesN] = useState(0);
+  const [spawnedTanksN, setSpawnedTanksN] = useState(0);
+  
+  //南物資
+  const [totalSuppliesS, setTotalSuppliesS] = useState(0);
+  const [spawnedTanksS, setSpawnedTanksS] = useState(0);
+
+  function nextTurn(){
+    let updatedObjects = {...gameObjects};
+    let updatedUnits = [...units];
+
+    //支援部隊の行動
+    const supportUnits = updatedUnits.filter((u) => u.type === "support");
+    for (const sup of supportUnits){
+      updatedObjects = processSupportAction(board,updatedObjects,sup,updatedUnits);
+    }
+    //物資収集
+    const northGain = collectSupplies(offboardNorthSupplyUnits);
+    const southGain = collectSupplies(offboardSouthSupplyUnits);
+    const newNorthSupplies = totalSuppliesN + northGain;
+    const newSouthSupplies = totalSuppliesS + southGain;
+
+    //戦車
+    const newNorthTank = trySpawnTank(newNorthSupplies, spawnedTanksN, "north");
+    const newSouthTank = trySpawnTank(newSouthSupplies, spawnedTanksS, "south");
+    if (newNorthTank) {
+      updatedUnits.push(newNorthTank);
+      setSpawnedTanksN(spawnedTanksN + 1);
+    }
+    if (newSouthTank) {
+      updatedUnits.push(newSouthTank);
+      setSpawnedTanksS(spawnedTanksS + 1);
     }
 
+    // 状態反映
+    setUnits(updatedUnits);
     setGameObjects(updatedObjects);
+    setTotalSuppliesN(newNorthSupplies);
+    setTotalSuppliesS(newSouthSupplies);
+
+
   }
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2>戦略シミュレーション（部隊テスト）</h2>
-
+    <>
+    <div style={{ display: "flex", gap: 16, padding: 16 }}>
+      <div>
+      <h2>戦略シミュレーション</h2>
+      <button onClick={nextTurn}> ▶︎ 次ターン</button>
       <Board  gameObjects = {gameObjects} setGameObjects={setGameObjects}/>
       <div style={{ marginTop: 16 }}>
         <h3>コアHP一覧</h3>
@@ -130,6 +103,33 @@ export default function App() {
         </ul>
       </div>
     </div>
+
+    <div
+        style={{
+          minWidth: 240,
+          padding: "10px 14px",
+          background: "#b0c4de",
+          borderRadius: 12,
+          border: "1px solid #ccc",
+          height: "fit-content",
+        }}
+      >
+        <h3>📦 物資収集状況</h3>
+
+        <div style={{ marginBottom: 10 }}>
+          <strong>北陣営</strong>
+          <div>総物資：{totalSuppliesN}</div>
+          <div>召喚済み戦車：{spawnedTanksN} / 4</div>
+        </div>
+
+        <div>
+          <strong>南陣営</strong>
+          <div>総物資：{totalSuppliesS}</div>
+          <div>召喚済み戦車：{spawnedTanksS} / 4</div>
+        </div>
+      </div>
+    </div>
+    </>
   );
 }
 
