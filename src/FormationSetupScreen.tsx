@@ -80,9 +80,9 @@ export default function FormationSetupScreen({
   return (
     <div style={{ padding: 40, textAlign: "center" }}>
       <h1>🗺 部隊配置画面</h1>
-      <p>北陣営は6列目、南陣営は25列目に配置できます。</p>
+      <p>メモ：北陣営は6列目、南陣営は25列目に配置できます。</p>
 
-      {/* チーム選択 */}
+      {/* チーム選択 ⚠️随時変更 */}
       <div style={{ marginBottom: 20 }}>
         <button
           onClick={() => setSelectedTeam("north")}

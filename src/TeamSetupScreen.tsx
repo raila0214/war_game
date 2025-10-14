@@ -60,7 +60,7 @@ export default function TeamSetupScreen({ onComplete }: TeamSetupScreenProps) {
             hasError(southFormation)
         }
       >
-        ▶ ゲーム開始
+        ▶ 部隊配置
       </button>
     </div>
   );
@@ -154,7 +154,7 @@ function TeamEditor({
       {["infantry", "raider", "support"].map((type) => 
         (assign[type as UnitType] ?? []).map((val, i) => (
             <div key={`${type}-${i}`}>
-                {unitLabel[type as UnitType]}:
+                {unitLabel[type as UnitType]}：
                 <input
                   type= "number"
                   min={1}
