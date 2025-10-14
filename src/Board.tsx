@@ -1,6 +1,7 @@
 import type { Cell, GameObject, Terrain } from "./types";
 import { createBoard } from "./boardSetup";
 import { useState } from "react";
+import React from "react";
 
 const ROWS = 30;
 const COLS = 16;

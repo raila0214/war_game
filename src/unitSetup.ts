@@ -1,24 +1,16 @@
-import type { Unit, PlayerUnitConfig } from "./types";
-import { createUnit } from "./unitStats";
+import { validateAndCreateFormation } from "./formationLogic";
+import type { FormationInput } from "./formationLogic";
+import type { Unit } from "./types";
+import { autoPlaceUnits } from "./autoUnitSetup";
 
-/*
-export function generateUnitFromConfig(
-    config: PlayerUnitConfig,
-    team: "north"|"south"
-): Unit[]{
-    const units: Unit[] =[];
-    let totalAssigned = 0;
+export function generateUnits(input: FormationInput,useAutoPlacement = false): Unit[]{
+    const units = validateAndCreateFormation(input);
+    //useAutoPlacementがtrue,または全ユニットが(x,y=-1)なら自動配置
+    const needAuto = useAutoPlacement || units.every((u) => u.x === -1 && u.y === -1);
 
-    //大隊と物資部隊を必ず含める
-    const battalion = config.units.find((u) => u.type === "battalion") ?? {
-        type: "battalion",
-        members: 1,
-    };
-    const supply = config.units.find((u) => u.type === "supply") ?? {
-        type: "supply",
-        members: 1,
-    };
+    if(needAuto) {
+        return autoPlaceUnits(input);
+    }
 
-    
+    return units;
 }
-*/
