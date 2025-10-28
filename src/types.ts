@@ -55,9 +55,29 @@ export type UnitType =
 | "tank";      // 戦車
 
 //部隊
-export type Unit = {
+export type TankUnit = {
   id: string;
-  type: UnitType; //部隊タイプ
+  type: "tank"; 
+  team: Team; //陣営 
+  x: number; //位置X
+  y: number; //位置Y
+  attack: number; //攻撃力
+  defense: number; //防御力
+  hp: number; //現在HP
+  maxHp: number //最大HP
+  range: number //攻撃範囲
+  speed: number // 移動速度
+  members: number //部隊人数
+  collectedSupplies?: number;
+  routeNumber: number;     
+  route: [number, number][]; 
+  routeProgress: number;
+  targetX?: number;
+  targetY?: number;
+};
+export type BaseUnit = {
+  id: string;
+  type: Exclude<UnitType, "tank">; //部隊タイプ
   team: Team; //陣営 
   x: number; //位置X
   y: number; //位置Y
@@ -70,7 +90,11 @@ export type Unit = {
   members: number //部隊人数
   mode?: "heal" | "attack";
   collectedSupplies?: number;
+  targetX?: number;
+  targetY?: number;
 };
+
+export type Unit = BaseUnit | TankUnit;
 
 //両チームの設定
 export type GameSetup = {

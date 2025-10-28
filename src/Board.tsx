@@ -1,4 +1,4 @@
-import type { Cell, GameObject, Terrain } from "./types";
+import type { Cell, GameObject, Terrain, Unit } from "./types";
 import { createBoard } from "./boardSetup";
 import { useState } from "react";
 import React from "react";
@@ -25,27 +25,19 @@ const coreColor: Record<GameObject["type"], string> = {
 export default function Board({
   gameObjects,
   setGameObjects,
+  units = [],
+  onCellClick,
+  showTargets = false,
 }: {
   gameObjects: Record<string, GameObject>;
   setGameObjects: React.Dispatch<
     React.SetStateAction<Record<string, GameObject>>
   >;
+  units?: Unit[];
+  onCellClick?: (x: number, y: number) => void;
+  showTargets?: boolean;
 }) {
   const [board] = useState<Cell[]>(createBoard());
-
-  // 攻撃処理（クリックでHPを減らす）※随時変更
-  function attackCell(cell: Cell, damage: number) {
-    if (cell.objectId) {
-      setGameObjects((prev) => {
-        const obj = prev[cell.objectId!];
-        if (!obj) return prev;
-        return {
-          ...prev,
-          [obj.id]: { ...obj, hp: Math.max(0, obj.hp - damage) },
-        };
-      });
-    }
-  }
 
   return (
     <svg
@@ -57,17 +49,83 @@ export default function Board({
         const obj = cell.objectId ? gameObjects[cell.objectId] : null;
         const fill = obj ? coreColor[obj.type] : terrainColor[cell.terrain];
 
+        const unitHere = units.find((u) => u.x === cell.x && u.y === cell.y && u.type !== "supply");
+        let symbol = "";
+        if(unitHere){
+          if(unitHere.team === "north"){
+            symbol = 
+              unitHere.type === "battalion"
+                ? "🟦"
+                : unitHere.type === "infantry"
+                ? "🔵"
+                : unitHere.type === "raider"
+                ? "💧"
+                : unitHere.type === "support"
+                ? "💙"
+                : unitHere.type === "tank"
+                ? "🚙"
+                : "";
+          } else {
+            symbol = 
+              unitHere.type === "battalion"
+                ? "🟥"
+                : unitHere.type === "infantry"
+                ? "🔴"
+                : unitHere.type === "raider"
+                ? "🩸"
+                : unitHere.type === "support"
+                ? "❤️"
+                : unitHere.type === "tank"
+                ? "🚗"
+                : "";
+          }
+        }
+
+        //目的地マーカー
+        const targetMarker = showTargets
+          ? units.find(
+            (u) => 
+              u.targetX === cell.x &&
+              u.targetY === cell.y &&
+              u.type != "supply" &&
+              u.type != "tank"
+          )
+          : null;
+
         return (
+          <g key = {i}>
           <rect
-            key={i}
             x={cell.x * cellSize}
             y={cell.y * cellSize}
             width={cellSize}
             height={cellSize}
             fill={fill}
             stroke="#aaa"
-            onClick={() => attackCell(cell, 200)} // クリックで200ダメージ
+            onClick={() => onCellClick?.(cell.x, cell.y)} 
+            style = {{cursor: onCellClick ? "pointer" : "default"}}
           />
+
+          {symbol && (
+            <text
+              x={cell.x * cellSize + cellSize / 2}
+              y={cell.y * cellSize + cellSize / 2+4}
+              fontSize={16}
+              textAnchor="middle"
+            >
+             {symbol}
+            </text>
+          )}
+          {targetMarker && (
+            <text
+              x={cell.x * cellSize + cellSize / 2}
+              y={cell.y * cellSize + cellSize / 2-6}
+              fontSize={12}
+              textAnchor="middle"
+            >
+              🎯
+            </text>
+          )}
+          </g>
         );
       })}
     </svg>

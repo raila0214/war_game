@@ -1,5 +1,7 @@
 import type { Unit, GameObject } from "./types";
 import { calcSupplyGatherRate, TankSummonThresholds } from "./types";
+import { northTankRoutes, southTankRoutes } from "./tankRoutes";
+import { createUnit } from "./unitStats";
 
 /**
  * 物資部隊による物資収集処理
@@ -21,36 +23,20 @@ export function collectSupplies(supplyUnits: Unit[]): number {
  * @param totalSupplies 現在の総物資
  * @param spawnedTanks 現在の戦車数
  * @param team 陣営タグ "north" or "south"
- * @returns 新しく生成された戦車ユニット（なければ null）
+ * @param onSelectRoute ルート選択UI起動
  */
-export function trySpawnTank(
+export function trySpawnTankWithPopup(
   totalSupplies: number,
   spawnedTanks: number,
-  team: "north" | "south"
-): Unit | null {
-  if (spawnedTanks >= TankSummonThresholds.length) return null;
+  team: "north" | "south",
+  onSelectRoute: (team: "north" | "south", nextIndex: number) => void
+): boolean {
+  if (spawnedTanks >= TankSummonThresholds.length) return false;
 
   const threshold = TankSummonThresholds[spawnedTanks];
-  if (totalSupplies < threshold) return null;
+  if (totalSupplies < threshold) return false;
 
-  const yPosition = team === "north" ? 10 + spawnedTanks * 2 : 18 - spawnedTanks * 2;
-
-  const tank: Unit = {
-    id: `${team}_tank_${spawnedTanks + 1}`,
-    team,
-    type: "tank",
-    x: 8,
-    y: yPosition,
-    range: 1,
-    members: 1,
-    attack: 0,
-    defense: 60,
-    hp: 1600,
-    maxHp: 1600,
-    speed: 1,
-    collectedSupplies: 0,
-  };
-
-  console.log(`🚜 ${team === "north" ? "北陣営" : "南陣営"}：戦車召喚！ ${tank.id}`);
-  return tank;
+  onSelectRoute(team, spawnedTanks);
+  console.log(`🛻 ${team === "north" ? "北" : "南"}陣営：戦車召喚可能！ルート選択待機中`);
+  return true;
 }

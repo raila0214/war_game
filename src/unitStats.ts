@@ -1,4 +1,4 @@
-import type { Unit } from "./types";
+import type { Team, Unit ,BaseUnit,TankUnit,UnitType } from "./types";
 
 /**
  * 部隊タイプに応じて、人数をもとに各パラメータを算出
@@ -57,25 +57,64 @@ export function calcUnitStats(type: Unit["type"], members: number) {
  */
 export function createUnit(
   id: string,
-  team: "north" | "south",
-  type: Unit["type"],
+  team: Team,
+  type: Exclude<UnitType, "tank">,
+  x: number,
+  y: number,
+  members: number
+): BaseUnit;
+
+export function createUnit(
+  id: string,
+  team: Team,
+  type: "tank",
+  x: number,
+  y: number,
+  members: number
+): TankUnit;
+
+export function createUnit(
+  id: string,
+  team: Team,
+  type: UnitType,
   x: number,
   y: number,
   members: number
 ): Unit {
   const base = calcUnitStats(type, members);
-  return {
+  if(type === "tank"){
+    const tankUnit: TankUnit = {
+      id,
+      team,
+      type: "tank",
+      x,
+      y,
+      members,
+      range: 1,
+      attack: base.attack,
+      defense: base.defense,
+      hp: base.hp,
+      maxHp: base.hp,
+      speed: base.speed,
+      routeNumber: 1,
+      route: [[x,y]],
+      routeProgress: 0,
+    };
+    return tankUnit;
+  }
+  const baseUnit: BaseUnit = {
     id,
-    team,
-    type,
-    x,
-    y,
-    members,
-    range: 1,
-    attack: base.attack,
-    defense: base.defense,
-    hp: base.hp,
-    maxHp: base.hp,
-    speed: base.speed,
-  };
+      team,
+      type,
+      x,
+      y,
+      members,
+      range: 1,
+      attack: base.attack,
+      defense: base.defense,
+      hp: base.hp,
+      maxHp: base.hp,
+      speed: base.speed,
+  }
+  return baseUnit;
 }
