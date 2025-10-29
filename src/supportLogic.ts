@@ -29,9 +29,6 @@ export function processSupportAction(
   let updatedObjects = { ...gameObjects };
 
   if (isolated) {
-    // -----------------------------
-    // 🟥 攻撃モード（孤立中）
-    // -----------------------------
     const targets = allUnits.filter(
       (enemy) =>
         enemy.team !== unit.team &&

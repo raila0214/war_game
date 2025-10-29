@@ -9,31 +9,31 @@ export function calcUnitStats(type: Unit["type"], members: number) {
       return {
         attack: 80 + (members - 1) * 1,
         defense: 40 + (members - 1) * 0.5,
-        hp: 500 + (members - 1) * 10,
+        hp: 300 + (members - 1) * 10,
         speed: 4,
       };
     case "battalion": // 大隊
       return {
         attack: 60 + (members - 1) * 0.8,
         defense: 30 + (members - 1) * 0.5,
-        hp: 2000 + (members - 1) * 15,
+        hp: 1000 + (members - 1) * 15,
         speed: 3,
       };
     case "raider": // 遊撃部隊
       return {
         attack: 100 + (members - 1) * 1.2,
         defense: 20 + (members - 1) * 0.5,
-        hp: 240 + (members - 1) * 5,
+        hp: 140 + (members - 1) * 5,
         speed: 5,
       };
     case "support": // 支援部隊
       return {
         attack: 20,
         defense: 30 + (members - 1) * 0.5,
-        hp: 600 + (members - 1) * 10,
+        hp: 400 + (members - 1) * 10,
         speed: 2,
       };
-    case "supply": // 物資部隊（戦闘パラメータは低め）
+    case "supply": // 物資部隊
       return {
         attack: 0,
         defense: 10 + (members - 1) * 0.3,
@@ -44,7 +44,7 @@ export function calcUnitStats(type: Unit["type"], members: number) {
       return {
         attack: 0,
         defense: 60,
-        hp: 1600,
+        hp: 500,
         speed: 1,
       };
     default:

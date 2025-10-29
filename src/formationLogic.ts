@@ -50,6 +50,8 @@ export function validateAndCreateFormation(input: FormationInput): Unit[] {
   assign.infantry?.slice(0, 5).forEach((n, i) => {
     units.push(createUnit(`${team}_infantry_${i + 1}`, team, "infantry", -1,-1, n));
   });
+  
+  
 
   // 大隊（必ず1）
   units.push(createUnit(`${team}_battalion`, team, "battalion", -1,-1, assign.battalion));

@@ -1,7 +1,15 @@
 //現在仮ルート
-export const northTankRoutes: [number,number][][] = [
+export type TankRouteData = {
+    routeNumber: number;
+    route: [number,number][];
+    stopBeforeCore: [number,number];
+    subCoreId: string;
+};
+export const northTankRoutes: TankRouteData[]= [
     //ルート1
-    [
+    {
+        routeNumber: 1,
+        route: [
         [2,15],
         [2,16],
         [2,17],
@@ -15,20 +23,27 @@ export const northTankRoutes: [number,number][][] = [
         [2,25],
         [2,26],
         [2,27],
-        [3,27],
+        [2,28],
         [3,28],
         [4,28],
         [5,28],
-        [6,28],
     ],
+    stopBeforeCore: [2,26],
+    subCoreId: "subCoreS1",
+    },
     //ルート2
-    [
-        [7, 15],
+    {
+        routeNumber: 2,
+        route: [
         [7, 16],
+        [6, 16],
         [6, 17],
-        [6, 18],
-        [7, 19],
-        [7, 20],
+        [5, 17],
+        [5, 18],
+        [5, 19],
+        [5, 20],
+        [6, 20],
+        [6, 21],
         [7, 21],
         [7, 22],
         [7, 23],
@@ -37,10 +52,14 @@ export const northTankRoutes: [number,number][][] = [
         [7, 26],
         [7, 27],
         [7, 28],
-        [7, 29],
     ],
+    stopBeforeCore: [7,26],
+    subCoreId: "subCoreS2",
+    },
     //ルート3
-    [
+    {
+        routeNumber: 3,
+        route: [
         [12, 15],
         [12, 16],
         [12, 17],
@@ -55,13 +74,20 @@ export const northTankRoutes: [number,number][][] = [
         [12, 26],
         [12, 27],
         [12, 28],
-        [12, 29],
+        [11, 28],
+        [10, 28],
+        [9, 28],
     ],
+    stopBeforeCore: [12,26],
+    subCoreId: "subCoreS3",
+    },
 ];
 
-export const southTankRoutes: [number,number][][] = [
+export const southTankRoutes: TankRouteData[]= [
     //ルート1
-    [
+    {
+        routeNumber: 4,
+        route: [
         [3, 14],
         [3, 13],
         [3, 12],
@@ -76,16 +102,26 @@ export const southTankRoutes: [number,number][][] = [
         [3, 3],
         [3, 2],
         [3, 1],
-        [3, 0],
+        [4, 1],
+        [5, 1],
+        [6, 1],
     ],
+    stopBeforeCore: [3,3],
+    subCoreId: "subCoreN1",
+},
     // ルート2（障害物を避ける）
-    [
-        [8, 14],
+    {
+        routeNumber: 5,
+        route: [
         [8, 13],
+        [9, 13],
         [9, 12],
-        [9, 11],
-        [8, 10],
-        [8, 9],
+        [10, 12],
+        [10, 11],
+        [10, 10],
+        [10, 9],
+        [9, 9],
+        [9, 8],
         [8, 8],
         [8, 7],
         [8, 6],
@@ -94,10 +130,14 @@ export const southTankRoutes: [number,number][][] = [
         [8, 3],
         [8, 2],
         [8, 1],
-        [8, 0],
     ],
+    stopBeforeCore: [8,3],
+    subCoreId: "subCoreN2",
+},
     // ルート3
-    [
+    {
+        routeNumber: 6,
+        route: [
         [13, 14],
         [13, 13],
         [13, 12],
@@ -112,6 +152,11 @@ export const southTankRoutes: [number,number][][] = [
         [13, 3],
         [13, 2],
         [13, 1],
-        [13, 0],
+        [12, 1],
+        [11, 1],
+        [10, 1],
     ],
-]
+    stopBeforeCore: [13,3],
+    subCoreId: "subCoreN3",
+},
+];

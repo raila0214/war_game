@@ -1,4 +1,4 @@
-import type { Unit } from "./types";
+import type { GameObject, Unit } from "./types";
 import type { Cell } from "./types";
 
 function heuristic(ax: number, ay: number, bx: number, by: number){
@@ -17,17 +17,49 @@ export function moveUnitsTowardTargets(board: Cell[], units: Unit[]): Unit[] {
         return u;
     });
 }
-export function moveTanks(units: Unit[] , turn: number): Unit[]{
+export function moveTanks(units: Unit[] ,objects: Record<string, GameObject> ,turn: number): Unit[]{
     //3ターンに1マス進む
     if(turn % 3 !== 0) return units;
+    const byId = new Map(units.map(u => [u.id, u]));
 
     return units.map((u) => {
-        if(u.type !== "tank" || !u.route || typeof u.routeProgress !== "number") return u;
-
+        if(u.type !== "tank" || !u.route || typeof u.routeProgress !== "number"){ 
+            return u
+        };
+        const subAlive = u.subCoreId && objects[u.subCoreId]?.hp > 0;
         const nextIndex = u.routeProgress + 1;
-        if(nextIndex >= u.route.length) return u;
-        const [nextX,nextY] = u.route[nextIndex];
-        return { ...u, x: nextX, y:nextY, routeProgress: nextIndex};
+
+        if (nextIndex >= u.route.length) return u;
+
+        const [nx, ny] = u.route[nextIndex];
+
+        // ====== subCore が生存している場合 ======
+        if (subAlive) {
+
+        // ★ stopBeforeCore に到達した → そこで停止
+            if (u.stopBeforeCore) {
+                const [sx, sy] = u.stopBeforeCore;
+
+                // stopBeforeCore 手前なら進む
+                if (!(u.x === sx && u.y === sy)) {
+                    return {
+                        ...u,
+                        x: nx,
+                        y: ny,
+                        routeProgress: nextIndex,
+                    };
+                }
+
+                // stopBeforeCore にいる → 進まない
+                return u;
+            }
+        }
+        return {
+            ...u,
+            x: nx,
+            y: ny,
+            routeProgress: nextIndex,
+        };
     });
 }
 

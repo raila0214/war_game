@@ -29,7 +29,8 @@ export function trySpawnTankWithPopup(
   totalSupplies: number,
   spawnedTanks: number,
   team: "north" | "south",
-  onSelectRoute: (team: "north" | "south", nextIndex: number) => void
+  onSelectRoute: (team: "north" | "south", nextIndex: number) => void,
+  onSpawnMessage?: (msg: string) => void
 ): boolean {
   if (spawnedTanks >= TankSummonThresholds.length) return false;
 
@@ -37,6 +38,8 @@ export function trySpawnTankWithPopup(
   if (totalSupplies < threshold) return false;
 
   onSelectRoute(team, spawnedTanks);
-  console.log(`🛻 ${team === "north" ? "北" : "南"}陣営：戦車召喚可能！ルート選択待機中`);
+  if(onSpawnMessage){
+    onSpawnMessage(`${team === "north" ? "北" : "南"}陣営が戦車を召喚`);
+  }
   return true;
 }

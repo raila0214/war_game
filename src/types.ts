@@ -14,6 +14,8 @@ export type GameObject = {
     type: "coreMain" | "coreSub"; //種類
     hp: number; //現在HP
     maxHp: number; //最大HP
+    defense: number;
+    team: "north" | "south";
   };
 
 //陣営（チームたぐ）
@@ -72,6 +74,8 @@ export type TankUnit = {
   routeNumber: number;     
   route: [number, number][]; 
   routeProgress: number;
+  stopBeforeCore?: [number,number];
+  subCoreId?: string;
   targetX?: number;
   targetY?: number;
 };
@@ -110,7 +114,7 @@ export function calcSupplyGatherRate(members: number): number {
 }
 
 // 戦車召喚に必要な物資数
-export const TankSummonThresholds = [500, 800, 1000, 1200];
+export const TankSummonThresholds = [400, 1000, 1400, 1800];
 
 //コア
 export const CORE_DEFAULTS = {

@@ -28,6 +28,7 @@ export default function Board({
   units = [],
   onCellClick,
   showTargets = false,
+  highlightUnitId,
 }: {
   gameObjects: Record<string, GameObject>;
   setGameObjects: React.Dispatch<
@@ -36,6 +37,7 @@ export default function Board({
   units?: Unit[];
   onCellClick?: (x: number, y: number) => void;
   showTargets?: boolean;
+  highlightUnitId?: string | null;
 }) {
   const [board] = useState<Cell[]>(createBoard());
 
@@ -50,6 +52,8 @@ export default function Board({
         const fill = obj ? coreColor[obj.type] : terrainColor[cell.terrain];
 
         const unitHere = units.find((u) => u.x === cell.x && u.y === cell.y && u.type !== "supply");
+
+        const isHighlighted = highlightUnitId && unitHere && unitHere.id === highlightUnitId;
         let symbol = "";
         if(unitHere){
           if(unitHere.team === "north"){
@@ -99,8 +103,9 @@ export default function Board({
             y={cell.y * cellSize}
             width={cellSize}
             height={cellSize}
-            fill={fill}
-            stroke="#aaa"
+            fill={isHighlighted ? "#ffff88" : fill}
+            stroke={isHighlighted ? "gold" : "#aaa"}
+            strokeWidth={isHighlighted ? 2:1}
             onClick={() => onCellClick?.(cell.x, cell.y)} 
             style = {{cursor: onCellClick ? "pointer" : "default"}}
           />
