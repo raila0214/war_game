@@ -169,7 +169,7 @@ export default function GameScreen({
     return units.filter(u =>
        u.team === team && 
        u.hp > 0 && 
-       ["infantry","battalion","raider","support".includes(u.type)]
+       ["infantry","battalion","raider","support"].includes(u.type)
       ).length === 0;
   }
 
