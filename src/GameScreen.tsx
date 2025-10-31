@@ -166,7 +166,11 @@ export default function GameScreen({
   }
 
   function checkAllUnitsDestroyed(units: Unit[], team: "north" | "south"){
-    return units.filter(u => u.team === team && u.hp > 0 && u.type !== "supply").length === 0;
+    return units.filter(u =>
+       u.team === team && 
+       u.hp > 0 && 
+       ["infantry","battalion","raider","support".includes(u.type)]
+      ).length === 0;
   }
 
   function nextTurn(){
@@ -218,16 +222,14 @@ export default function GameScreen({
     }
 
     //盤外の物資部隊ユニット
-  const offboardNorthSupplyUnits: Unit[] = [
-    {...createUnit("north_supply","north","supply",-1,-1,20), range: 0},
-  ];
-  const offboardSouthSupplyUnits: Unit[] = [
-    {...createUnit("south_supply","north","supply",-1,-1,20), range: 0},
-  ];
+ 
+  const supplyNorth = units.filter(u => u.type === "supply" && u.team === "north");
+  const supplySouth = units.filter(u => u.type === "supply" && u.team === "south");
+  
 
     //物資収集
-    const northGain = collectSupplies(offboardNorthSupplyUnits);
-    const southGain = collectSupplies(offboardSouthSupplyUnits);
+    const northGain = collectSupplies(supplyNorth);
+    const southGain = collectSupplies(supplySouth);
     const newNorthSupplies = totalSuppliesN + northGain;
     const newSouthSupplies = totalSuppliesS + southGain;
 

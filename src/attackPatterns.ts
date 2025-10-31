@@ -21,5 +21,6 @@ export const attackPatterns: Record<UnitType, [number,number][]> = {
       supply: [],
       tank: [
         [0,0],[1,0],[-1,0],[0,1],[0,-1],
+        [1,1],[1,-1],[-1,1],[-1,-1],
       ],
 };
