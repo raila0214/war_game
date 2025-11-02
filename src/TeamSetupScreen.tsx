@@ -19,6 +19,9 @@ export default function TeamSetupScreen({ onComplete }: TeamSetupScreenProps) {
   const [northFormation, setNorthFormation] = useState<FormationInput>(defaultNorthFormation);
   const [southFormation, setSouthFormation] = useState<FormationInput>(defaultSouthFormation);
 
+  const [showRuleModal, setShowRuleModal] = useState(false);
+  const [showUnitModal, setShowUnitModal] = useState(false);
+
   //決定ボタン
   const handleConfirm = (teamFormation: FormationInput) => {
     const assign = teamFormation.assignment;
@@ -39,6 +42,24 @@ export default function TeamSetupScreen({ onComplete }: TeamSetupScreenProps) {
   return (
     <div style={{ padding: 40, textAlign: "center" }}>
       <h1>⚔ 部隊設定画面 ⚔</h1>
+
+      <div style={{ marginBottom: 15}}>
+        <button
+          onClick={() => setShowRuleModal(true)}
+          style={{marginRight: 10, padding: "6px 12px"}}
+        >
+          ルール説明
+        </button>
+        <button 
+          onClick={() => setShowUnitModal(true)}
+          style={{padding: "6px 12px"}}
+        >
+          部隊特性
+        </button>
+
+      </div>
+
+
       <p>各陣営の部隊構成を設定してください（合計100人）</p>
 
       <div style={{ display: "flex", justifyContent: "center", gap: 60, marginTop: 30 }}>
@@ -62,6 +83,101 @@ export default function TeamSetupScreen({ onComplete }: TeamSetupScreenProps) {
       >
         ▶ 部隊配置
       </button>
+
+      {showRuleModal &&(
+        <Modal onClose={() => setShowRuleModal(false)}>
+          <h2>ルール説明</h2>
+          <p>
+            <b>⬛︎ ゲーム概要</b><br />
+            <b>最大○○ターン制</b>のターン制ストラテジーゲームです。<br />
+            プレイヤーは<b> 北陣営 / 南陣営 </b>のいずれかを操り、敵陣営のコアを破壊、または殲滅することを目指します。<br />
+            <br />
+            <b>⬛︎ 勝利条件</b><br />
+            以下の <b>いずれか</b> を満たした陣営が勝利します。<br />
+            <b>1. 相手のメインコアを破壊する</b><br />
+            <b>2. 相手の全ての部隊を殲滅する</b><br />
+            <b>3. 全ターン終了時、メインコアの残りHPが高い方が勝利</b>
+            <h5>※双方のメインコアの値が同値 → 引き分け</h5>
+            <b>⬛︎ コアについて</b><br />
+            <b>●メインコア</b><br />
+            ・破壊されると敗北<br />
+            ・直接攻撃するには、先にサブコアを破壊する必要がある<br />
+            <b>●サブコア</b><br />
+            ・メインコアを保護する装置<br />
+            ・３つあるサブコアを１つ以上破壊しない限り、メインコアにダメージを与えられない<br />
+            <br />
+            <b>⬛︎ 戦力について</b><br />
+            <b>●部隊</b><br />
+            ・最大<b>６部隊</b>まで編成可能<br />
+            ・プレイヤーは<b>１００ポイント</b>を割り振って部隊を編成する<br />
+            ・<b>余ったポイントは全て大隊に自動配分される</b><br />
+            <b>●戦車</b><br />
+            ・コア破壊に特化<br />
+            ・コアに対して固定値のダメージを与える
+          </p>
+        </Modal>
+      )}
+      {showUnitModal &&(
+        <Modal onClose={() => setShowUnitModal(false)}>
+          <h2>部隊特性</h2>
+          <p>
+            <b>○ 小隊</b>・・・最大５部隊<br />
+            【特徴】基本的な部隊 <br />
+            【攻撃範囲】縦横斜め１マス（計８マス）<br />
+            <b>○ 大隊</b>・・・１部隊固定<br />
+            【特徴】高耐久の主力<br />
+            【攻撃範囲】縦横２マス、斜め近距離１マス （計２０マス）<br />
+            <b>○ 遊撃部隊</b>・・・最大２部隊<br />
+            【特徴】低耐久・高火力<br />
+            【攻撃範囲】縦横１マス （計４マス）<br />
+            <b>○ 支援部隊</b>・・・最大１部隊<br />
+            【特徴】回復　※攻撃には不参加<br />
+            【回復範囲】縦横斜め１マス （計８マス）<br />
+            <b>○ 物資部隊</b><br />
+            【特徴】部隊人数に応じて物資収集を行う。　※盤外活動<br />
+            【戦車召喚】物資が一定値に到達したら戦車を召喚できる。<br />
+            <b>○ 戦車</b><br />
+            【特徴】コアへの攻撃　※コア以外への攻撃は行わない <br />
+            【攻撃範囲】縦横斜め１マス （計８マス）<br />
+          </p>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function Modal({ children, onClose }: { children: React.ReactNode; onClose: () => void}){
+  return(
+    <div
+      style={{
+        position: "fixed",
+        top: 0, left: 0, width: "100%", height: "100%",
+        backgroundColor: "rgba(0,0,0,0.5)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 9999,
+      }}
+      onClick={onClose}
+    >
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          color: "black",
+          background: "white",
+          borderRadius: 12,
+          padding: 20,
+          width: "550px",
+          maxHeight:"80vh",
+          textAlign: "left",
+          overflowY: "auto",
+          position:"relative",
+        }}
+      >
+        {children}
+
+      </div>
+
     </div>
   );
 }
