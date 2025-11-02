@@ -129,6 +129,7 @@ export default function FormationSetupScreen({
         <button
           onClick={() => setSelectedTeam("north")}
           style={{
+            color: "black",
             marginRight: 10,
             background: selectedTeam === "north" ? "#add8e6" : "#eee",
             padding: "6px 12px",

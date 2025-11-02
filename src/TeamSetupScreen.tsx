@@ -91,6 +91,7 @@ export default function TeamSetupScreen({ onComplete }: TeamSetupScreenProps) {
             <b>⬛︎ ゲーム概要</b><br />
             <b>最大○○ターン制</b>のターン制ストラテジーゲームです。<br />
             プレイヤーは<b> 北陣営 / 南陣営 </b>のいずれかを操り、敵陣営のコアを破壊、または殲滅することを目指します。<br />
+            <b>６ターンに１回</b> 設定フェーズがあり、各部隊の目標地を指定できます<br />
             <br />
             <b>⬛︎ 勝利条件</b><br />
             以下の <b>いずれか</b> を満たした陣営が勝利します。<br />
